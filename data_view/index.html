@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="assets/echarts.js"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="assets/bmap.min.js"></script>
+    <script type="text/javascript" src="assets/zhilianData.js"></script>
+    <style>
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+    }
+    .template{
+    	list-style-type: none;
+    	padding: 0;
+    	margin:0;
+    }
+    .template li{
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+    	padding:3px 0;
+    }
+    .template span{
+    	color:#efea85;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="map-wrap" style="height:100%;"></div>
+    <script>
+    
+    zhilianData.forEach(item=>{
+    	item.value=[Number(item.lon),Number(item.lat),item.salary_max?parseInt(item.salary_max):-1]
+    });
+
+    var bmapChart = echarts.init(document.getElementById('map-wrap'));
+
+    var option = {
+        bmap: {
+            center: [104.07, 30.62],
+            zoom: 12,
+            roam: true,
+			mapStyle:{
+				styleJson:[
+					{
+						"featureType":"land",
+						"elementType":"all",
+						"stylers":{
+							"color":"#073763"
+						}
+					},
+					{
+						"featureType":"water",
+						"elementType":"all",
+						"stylers":{
+							"color":"#073763",
+							"lightness":-54
+						}
+					},
+					{
+					    'featureType': 'arterial',
+					    'elementType': 'geometry.fill',
+					    'stylers': {
+					        // 'color': '#ffffff',
+					        "color":"#073763",
+					        // "lightness":-62,
+					    }
+					},
+					{
+					    'featureType': 'arterial',
+					    'elementType': 'geometry.stroke',
+					    'stylers': {
+					        'color': '#555555'
+					    }
+					},
+					{
+						"featureType":"highway",
+						"elementType":"all",
+						"stylers":{
+							"color":"#45818e",
+							'visibility': 'off'
+						}
+					},
+					{
+                        'featureType': 'railway',
+                        'elementType': 'all',
+                        'stylers': {
+                            'visibility': 'off'
+                        }
+                    },
+                    {
+                        'featureType': 'subway',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'lightness': -70
+                        }
+                    },
+                    {
+                        'featureType': 'building',
+                        'elementType': 'geometry.fill',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    },
+                    {
+                        'featureType': 'building',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#022338'
+                        }
+                    },
+                    {
+                        'featureType': 'all',
+                        'elementType': 'labels.text.fill',
+                        'stylers': {
+                            'color': '#857f7f'
+                        }
+                    },
+                    {
+                        'featureType': 'all',
+                        'elementType': 'labels.text.stroke',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    },
+					{
+						"featureType":"boundary",
+						"elementType":"all",
+						"stylers":{
+							"color":"#ffffff",
+							"lightness":-62,
+							"visibility":"on"
+						}
+					},
+					{
+                        'featureType': 'green',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#062032'
+                        }
+                    },
+                    {
+                        'featureType': 'local',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    },
+                    {
+                        'featureType': 'manmade',
+                        'elementType': 'all',
+                        'stylers': {
+                            'color': '#022338'
+                        }
+                    },
+					{
+						"featureType": "label",
+						"elementType": "labels.text.fill",
+						"stylers": {
+						  "color": "#ffffff",
+						  "visibility": "on"
+						}
+					},
+					{
+						"featureType": "label",
+						"elementType": "labels.text.stroke",
+						"stylers": {
+						  "color": "#444444",
+						  "visibility": "off"
+						}
+                    },
+                    {
+	                    "featureType": "medical",
+	                    "elementType": "all",
+	                    "stylers": {
+	                        "visibility": "off"
+	                    }
+                    }
+				]
+			}
+        },
+        visualMap: {
+            type: 'piecewise',
+            // type: 'continuous',
+            // show:false,
+            // min: 0,
+            // max: 50,
+
+            // minOpen:true,
+            // maxOpen:true,
+            pieces:[
+            	{max: 0},
+            	{min: 1, max: 5},
+            	{min: 6, max: 8},
+            	{min: 8, max: 10},
+            	{min: 10, max: 13},
+            	{min: 13, max: 16},
+            	{min: 16, max: 20},
+            	{min: 20, max: 25},
+            	{min: 25, max: 30},
+            	{min: 30, max: 40},
+            	{min: 50}
+            ],
+            calculable: true,
+            itemWidth:46,
+            itemHeight:24,
+            left:20,
+            top:20,
+            inverse:true,
+            hoverLink:false,
+            inRange: {
+                color: ['#50a3ba', '#eac736', '#d94e5d','darkred']
+                // color: ['#60dadd', '#f1f24f', '#d1f675','#f2715e']
+            },
+            textStyle: {
+                color: '#fff'
+            },
+            formatter(a,b){
+            	if (a<0) return '面议';
+            	if (b>50) return '超高薪';
+            	return `${a} - ${b}K`;
+            },
+            // precision:3
+        },
+        series: [{
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            // data: data,
+            data: zhilianData,
+            symbolSize: function (data) {
+            	if (typeof data[2]!=='number'||isNaN(data[2])){
+            		console.log(data[2])
+            	}
+                return data[2]/3+10;
+            },
+            label: {
+                emphasis: {
+                    show: true,
+                    formatter: function (param) {
+                        return param.name;
+                    },
+                    position: 'top',
+                    fontSize:18,
+                    fontWeight:'bold',
+                    color:'white'
+                }
+            },
+            itemStyle: {
+	            normal: {
+	                shadowBlur: 10,
+	                shadowColor: 'rgba(0, 0, 0, 0.5)',
+	                shadowOffsetY: 0,
+	            }
+	        }
+        }],
+        tooltip: {
+            trigger: 'item',
+            triggerOn:'click',
+            padding: [10, 20, 10, 20],
+            backgroundColor: 'rgba(144,152,160,0.7)',
+            borderColor: '#ccc',
+            borderWidth: 2,
+            borderRadius: 4,
+            transitionDuration: 0,
+            extraCssText: 'width: 320px;',
+            textStyle: {
+                fontSize: 16
+            },
+            position:{
+            	right:60,
+            	bottom:20
+            },
+            enterable:true,
+            hideDelay:1000,
+            formatter(params){
+            	let data=params.data;
+            	let template='';
+            	const makeTemplate=(key,value)=>{
+            		template+=`<li><span>${key}</span>：${value}</li>`;
+            	};
+            	makeTemplate('名称',data.name);
+            	makeTemplate('规模',data.size);
+            	makeTemplate('职位',data.job_name);
+            	makeTemplate('年限',data.working_exp);
+            	makeTemplate('薪资',data.salary_min?data.salary_min+' - '+data.salary_max+'K':'面议');
+            	makeTemplate('市区',data.city+' '+data.area);
+            	makeTemplate('发布时间',data.update);
+            	makeTemplate('公司链接',`<a target="_blank" href="${data.url}">${data.url}</a>`);
+            	makeTemplate('招聘链接',`<a target="_blank" href="${data.position_url}">${data.position_url}</a>`);
+            	template=`<ul class="template">${template}</ul>`;
+            	return template;
+            }
+        },
+        /*toolbox:{
+        	feature:{
+        		saveAsImage:{}
+        	}
+        },*/
+        /*toolbox: {
+            feature: {
+                myTool1: {
+                    show: true,
+                    title: '自定义扩展方法1',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function (){
+                        alert('myToolHandler1')
+                    }
+                },
+            },
+            iconStyle:{
+            	// color:'white'
+            	borderColor:'white'
+            },
+            itemSize:24,
+        },*/
+    };
+    bmapChart.setOption(option);
+    </script>
+</body>
+
+</html>
