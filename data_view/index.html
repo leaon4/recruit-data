@@ -51,6 +51,14 @@
     var bmapChart = echarts.init(document.getElementById('map-wrap'));
 
     var option = {
+        title : {
+            text: '成都前端薪资分布图',
+            textStyle:{
+                color:'white'
+            },
+            subtext: `数据总数：${zhilianData.length}条    数据日期：2018-11-27`,
+            x:'center'
+        },
         bmap: {
             center: [104.07, 30.62],
             zoom: 12,
@@ -219,6 +227,9 @@
             hoverLink:false,
             inRange: {
                 color: ['#50a3ba', '#eac736', '#d94e5d','darkred']
+            },
+            outOfRange:{
+                symbolSize:0
             },
             textStyle: {
                 color: '#fff'
