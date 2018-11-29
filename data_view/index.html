@@ -40,9 +40,9 @@
     	item.value=[
             Number(item.lon),
             Number(item.lat),
-            item.salary_max?parseInt(item.salary_min):-1,
-            item.salary_max?Math.round(parseFloat(item.salary_min)/2+parseFloat(item.salary_max)/2):-1,
-            item.salary_max?parseInt(item.salary_max):-1,
+            item.salary_max?item.salary_min:-1,
+            item.salary_max?Math.round(item.salary_min/2+item.salary_max/2):-1,
+            item.salary_max?item.salary_max:-1,
         ];
     });
 
@@ -208,7 +208,7 @@
             pieces:[
             	{max: 0},
             	{min: 1, max: 5},
-            	{min: 6, max: 8},
+            	{min: 5, max: 8},
             	{min: 8, max: 10},
             	{min: 10, max: 13},
             	{min: 13, max: 16},
