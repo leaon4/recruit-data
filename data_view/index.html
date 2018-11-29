@@ -37,8 +37,16 @@
     <script>
     
     zhilianData.forEach(item=>{
-    	item.value=[Number(item.lon),Number(item.lat),item.salary_max?parseInt(item.salary_max):-1]
+    	item.value=[
+            Number(item.lon),
+            Number(item.lat),
+            item.salary_max?parseInt(item.salary_min):-1,
+            item.salary_max?Math.round(parseFloat(item.salary_min)/2+parseFloat(item.salary_max)/2):-1,
+            item.salary_max?parseInt(item.salary_max):-1,
+        ];
     });
+
+    let dimension=4;
 
     var bmapChart = echarts.init(document.getElementById('map-wrap'));
 
@@ -188,13 +196,7 @@
         },
         visualMap: {
             type: 'piecewise',
-            // type: 'continuous',
-            // show:false,
-            // min: 0,
-            // max: 50,
-
-            // minOpen:true,
-            // maxOpen:true,
+            dimension,
             pieces:[
             	{max: 0},
             	{min: 1, max: 5},
@@ -206,7 +208,7 @@
             	{min: 20, max: 25},
             	{min: 25, max: 30},
             	{min: 30, max: 40},
-            	{min: 50}
+            	{min: 40}
             ],
             calculable: true,
             itemWidth:46,
@@ -217,7 +219,6 @@
             hoverLink:false,
             inRange: {
                 color: ['#50a3ba', '#eac736', '#d94e5d','darkred']
-                // color: ['#60dadd', '#f1f24f', '#d1f675','#f2715e']
             },
             textStyle: {
                 color: '#fff'
@@ -227,18 +228,16 @@
             	if (b>50) return '超高薪';
             	return `${a} - ${b}K`;
             },
-            // precision:3
         },
         series: [{
             type: 'scatter',
             coordinateSystem: 'bmap',
-            // data: data,
             data: zhilianData,
             symbolSize: function (data) {
-            	if (typeof data[2]!=='number'||isNaN(data[2])){
-            		console.log(data[2])
+            	if (typeof data[dimension]!=='number'||isNaN(data[dimension])){
+            		console.log(data[dimension])
             	}
-                return data[2]/3+10;
+                return data[dimension]/3+10;
             },
             label: {
                 emphasis: {
@@ -298,30 +297,81 @@
             	return template;
             }
         },
-        /*toolbox:{
-        	feature:{
-        		saveAsImage:{}
-        	}
-        },*/
-        /*toolbox: {
+        toolbox: {
             feature: {
                 myTool1: {
                     show: true,
-                    title: '自定义扩展方法1',
+                    title: '以最小薪资计算',
                     icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
                     onclick: function (){
-                        alert('myToolHandler1')
+                        resetDimension(2);
                     }
                 },
+                myTool2: {
+                    show: true,
+                    title: '以平均薪资计算',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function (){
+                        resetDimension(3);
+                    }
+                },
+                myTool3: {
+                    show: true,
+                    title: '以最大薪资计算',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function (){
+                        resetDimension(4);
+                    },
+                    iconStyle:{
+                        borderColor:'#d94e5d'
+                    }
+                }
             },
             iconStyle:{
-            	// color:'white'
-            	borderColor:'white'
+            	borderColor:'white',
             },
-            itemSize:24,
-        },*/
+            itemSize:34,
+            right:20,
+            top:20,
+        },
     };
     bmapChart.setOption(option);
+
+    function resetDimension(index){
+        dimension=index;
+        bmapChart.setOption({
+            visualMap:{
+                dimension
+            },
+            series:{
+                symbolSize: function (data) {
+                    if (typeof data[dimension]!=='number'||isNaN(data[dimension])){
+                        console.log(data[dimension])
+                    }
+                    return data[dimension]/3+10;
+                },
+            },
+            toolbox:{
+                feature:{
+                    myTool1:{
+                        iconStyle:{
+                            borderColor:dimension===2?'#d94e5d':'white'
+                        }
+                    },
+                    myTool2:{
+                        iconStyle:{
+                            borderColor:dimension===3?'#d94e5d':'white'
+                        }
+                    },
+                    myTool3:{
+                        iconStyle:{
+                            borderColor:dimension===4?'#d94e5d':'white'
+                        }
+                    },
+                }
+            }
+        })
+    }
     </script>
 </body>
 
