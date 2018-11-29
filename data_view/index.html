@@ -281,7 +281,7 @@
             transitionDuration: 0,
             extraCssText: 'width: 320px;',
             textStyle: {
-                fontSize: 16
+                fontSize: 14
             },
             position:{
             	right:60,
@@ -356,9 +356,9 @@
             },
             series:{
                 symbolSize: function (data) {
-                    if (typeof data[dimension]!=='number'||isNaN(data[dimension])){
+                    /*if (typeof data[dimension]!=='number'||isNaN(data[dimension])){
                         console.log(data[dimension])
-                    }
+                    }*/
                     return data[dimension]/3+10;
                 },
             },
