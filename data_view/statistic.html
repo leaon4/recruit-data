@@ -12,6 +12,7 @@
         padding: 0;
         margin: 0;
         height: 100%;
+        overflow: hidden;
     }
     </style>
 </head>
@@ -200,7 +201,9 @@
                 type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
             },
             formatter: function (params) {
-                return `<p>${params[0].name}</p><p>${params[0].data} - ${params[1].data+params[0].data}K</p>`;
+                arr1=params[0].name.split('&&');
+                arr2=params[1].name.split('&&');
+                return `<p>${arr1[0]}</p><p>${arr1[1]}</p><p>${params[0].data} - ${params[1].data+params[0].data}K</p>`;
             }
         },
         grid: {
@@ -213,7 +216,7 @@
         xAxis: {
             type : 'category',
             splitLine: {show:false},
-            data:barData.map(item=>item.name),
+            data:barData.map(item=>item.name+'&&'+item.working_exp),
             axisLabel:{
                 show:false
             }
