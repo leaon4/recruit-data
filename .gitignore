@@ -1,1 +1,4 @@
 data_view/browser-sync.txt
+spider/node_modules
+spider/dist
+spider/work_module/dbOption.json
