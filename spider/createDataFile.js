@@ -16,6 +16,8 @@ async function run() {
     let zhilianData = {
         name: '成都前端薪资分布图',
         dataTime: '2018-12-01',
+        cityGeo: [104.07, 30.62],
+        initZoom: 12,
         datas: results
     };
     await file.writeFile('dist/zhilianData.js', 'const zhilianData=' + JSON.stringify(zhilianData));

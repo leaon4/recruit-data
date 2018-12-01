@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>饼图和折线图</title>
+    <script src="assets/echarts.js"></script>
+    <script type="text/javascript" src="assets/zhilianData.js"></script>
+    <style>
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="pie-chart" style="height:100%;width:50%;float:left"></div>
+    <div id="bar-chart" style="height:100%;width:50%;float:left"></div>
+    <script>
+    const pieChart = echarts.init(document.getElementById('pie-chart'));
+    const barChart = echarts.init(document.getElementById('bar-chart'));
+
+    const data = [
+        { name: '面议', value: 0 },
+        { name: '0-5K', value: 0, max: 5 },
+        { name: '5-10K', value: 0, max: 10 },
+        { name: '10-15K', value: 0, max: 15 },
+        { name: '15-20K', value: 0, max: 20 },
+        { name: '20-25K', value: 0, max: 25 },
+        { name: '25-30K', value: 0, max: 30 },
+        { name: '>=30K', value: 0, max: 1000 },
+    ];
+    calculate();
+
+    function calculate(type = 'max') {
+        let script = '';
+        data.forEach((item, index) => {
+            if (index === 0) return;
+            script += `
+                case salary<${item.max}:
+                data[${index}].value++;
+                break;
+            `;
+        });
+        script = `
+            switch(true){
+                ${script}
+            }
+        `;
+
+        zhilianData.datas.forEach(item => {
+            if (!item.salary_max) {
+                data[0].value++;
+                return;
+            }
+            let salary = type === 'average' ? ~~(item.salary_min / 2 + item.salary_max / 2 + 0.5) :
+                item['salary_' + type];
+            eval(script);
+        });
+    }
+
+    const option = {
+        title: {
+            text: zhilianData.name,
+            subtext: `数据总数：${zhilianData.datas.length}条    数据日期：${zhilianData.dataTime}`,
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c}家公司 <br/>{d}%"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            itemWidth: 46,
+            itemHeight: 24,
+            textStyle: {
+                fontSize: 16
+            },
+            data: data.map(item => item.name)
+        },
+        series: [{
+            name: '薪资区间',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '60%'],
+            data,
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+            label: {
+                fontSize: 16
+            }
+        }],
+        toolbox: {
+            feature: {
+                myTool1: {
+                    show: true,
+                    title: '以最小薪资计算',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function() {
+                        clearData();
+                        calculate('min');
+                        resetOption('min');
+                    }
+                },
+                myTool2: {
+                    show: true,
+                    title: '以平均薪资计算',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function() {
+                        clearData();
+                        calculate('average');
+                        resetOption('average');
+                    }
+                },
+                myTool3: {
+                    show: true,
+                    title: '以最大薪资计算',
+                    icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                    onclick: function() {
+                        clearData();
+                        calculate('max');
+                        resetOption('max');
+                    },
+                    iconStyle: {
+                        borderColor: '#d94e5d'
+                    }
+                }
+            },
+            iconStyle: {
+                // borderColor:'white',
+            },
+            itemSize: 34,
+            right: 20,
+            top: 20,
+        },
+    };
+    pieChart.setOption(option);
+
+    function clearData() {
+        data.forEach(item => {
+            item.value = 0;
+        });
+    }
+
+    function resetOption(type) {
+        pieChart.setOption({
+            series: [{
+                data
+            }],
+            toolbox: {
+                feature: {
+                    myTool1: {
+                        iconStyle: {
+                            borderColor: type === 'min' ? '#d94e5d' : '#666'
+                        }
+                    },
+                    myTool2: {
+                        iconStyle: {
+                            borderColor: type === 'average' ? '#d94e5d' : '#666'
+                        }
+                    },
+                    myTool3: {
+                        iconStyle: {
+                            borderColor: type === 'max' ? '#d94e5d' : '#666'
+                        }
+                    },
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+    const barData = zhilianData.datas.filter(item => {
+        return item.salary_max;
+    });
+
+    const barOption = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            },
+            formatter: function(params) {
+                arr1 = params[0].name.split('&&');
+                arr2 = params[1].name.split('&&');
+                return `<p>${arr1[0]}</p><p>${arr1[1]}</p><p>${params[0].data} - ${params[1].data+params[0].data}K</p>`;
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '10%',
+            top: '35%',
+            bottom: '20%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            splitLine: { show: false },
+            data: barData.map(item => item.name + '&&' + item.working_exp),
+            axisLabel: {
+                show: false
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '薪资'
+        },
+        dataZoom: [{
+                type: 'inside'
+            },
+            {
+                type: 'slider',
+                bottom: '15%',
+            }
+        ],
+        series: [{
+                name: '最低',
+                type: 'line',
+                stack: '总量',
+                // barCategoryGap:'-15%',
+                itemStyle: {
+                    normal: {
+                        barBorderColor: 'rgba(0,0,0,0)',
+                        color: 'rgba(0,0,0,0)'
+                    },
+                    emphasis: {
+                        barBorderColor: 'rgba(0,0,0,0)',
+                        color: 'rgba(0,0,0,0)'
+                    }
+                },
+                data: barData.map(item => item.salary_min)
+            },
+            {
+                name: '最高',
+                type: 'line',
+                stack: '总量',
+                // barCategoryGap:'-15%',
+                label: {
+                    normal: {
+                        position: 'top'
+                    }
+                },
+                areaStyle: {},
+                data: barData.map(item => item.salary_max - item.salary_min)
+            }
+        ],
+        visualMap: {
+            type: 'piecewise',
+            show: false,
+            pieces: [
+                { max: 0 },
+                { min: 1, max: 5 },
+                { min: 5, max: 8 },
+                { min: 8, max: 10 },
+                { min: 10, max: 13 },
+                { min: 13, max: 16 },
+                { min: 16, max: 20 },
+                { min: 20, max: 25 },
+                { min: 25, max: 30 },
+                { min: 30, max: 40 },
+                { min: 40 }
+            ],
+            inRange: {
+                color: ['#50a3ba', '#eac736', '#d94e5d', 'darkred']
+            },
+        },
+    };
+
+    barChart.setOption(barOption)
+    </script>
+</body>
+
+</html>
