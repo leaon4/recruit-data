@@ -2,8 +2,8 @@ const db = require('./work_module/db');
 const spider = require('./work_module/spider');
 const file = require('./work_module/file');
 
-const tableName = 'aa';
-let index = 0;
+const tableName = 'aa';// 数据库表名
+let start = 400;// 爬取的url之start值
 
 run().catch(e => {
     console.error(e);
@@ -12,29 +12,44 @@ run().catch(e => {
 async function run() {
     let data, json, dbResult;
     try {
-        data = await spider.fetch(index);
+        // 爬取数据
+        data = await spider.fetch(start);
+
         json = JSON.parse(data);
+
+        // 格式化数据
         let arr = format(json.data.results);
+
+        // 写入数据库
         dbResult = await db.insert(arr, tableName);
     } catch (e) {
+        // 如果出现错误，将错误写入文件
         console.error(e);
         await file.writeFile('error.txt', e.stack);
         let log = json.data.results;
         await file.writeFile('error.json', JSON.stringify(log));
         return;
     }
-    index += 100;
+    // 成功后start自增100
+    start += 100;
+    // 控制台输入成功信息
     console.log(dbResult);
-    console.log(index);
-    if (index <= json.data.numFound) {
-        setTimeout(run, 500);
+    // 输出start值，用于记录。如果出错则可根据此修改初始start值
+    console.log(start);
+
+    if (start <= json.data.numFound) {
+        // 作为一枚有底线的爬虫，当然要设置一点间隔时间
+        setTimeout(run, 1000);
     } else {
+        // 爬取完毕
         console.log('done!');
+        process.exit();
     }
 }
 
 function format(results) {
     return results.map(item => {
+        // item.salary是'10K-15K'的格式
         let salarys = item.salary.split('-');
         return [
             item.company.name,

@@ -24,31 +24,31 @@ CREATE TABLE compony (
 create table compony_bak like compony;
 insert into compony_bak select * from compony;
 
-delete from aa
+delete from compony
 where job_name not regexp '(前端|web|h5|html5|script|js|微信小程序)';
 
-delete from aa
+delete from compony
 where name regexp '(达内|培训)';
 
-delete from aa
+delete from compony
 where job_name regexp '(学徒|实习|助理|实训)';
 
-delete from aa
+delete from compony
 where job_name regexp 'webgis';
 
 /* 这句误伤有点大 */
-delete from aa
+delete from compony
 where job_name regexp 'web' and job_name not regexp '前';
 /****************/
 
-delete from aa
+delete from compony
 where job_name regexp '(美|设计|ui)';
 
-delete from aa
+delete from compony
 where job_name regexp '(java|php|python)' and job_name not regexp 'script';
 
-delete from aa
+delete from compony
 where job_name regexp '(ue4|unity|u3d|c#|游戏|专员|基础|产品经理|mcu|ic|gis|ios|andriod|帐|账|催|转行|应届|客)' and job_name not regexp 'node';
 
-delete from aa
+delete from compony
 where `update` < '2018-9-1';
