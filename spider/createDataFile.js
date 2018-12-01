@@ -3,7 +3,9 @@ const file = require('./work_module/file');
 
 const tableName = 'aa';
 
-run();
+run().catch(e => {
+    console.error(e);
+});
 
 async function run() {
     let sql = `
@@ -13,8 +15,10 @@ async function run() {
     let results = await db.query(sql);
     let zhilianData = {
         name: '成都前端薪资分布图',
-        dataTime: '2018-11-27',
+        dataTime: '2018-12-01',
         datas: results
     };
     await file.writeFile('dist/zhilianData.js', 'const zhilianData=' + JSON.stringify(zhilianData));
+    console.log('done!');
+    process.exit();
 }
