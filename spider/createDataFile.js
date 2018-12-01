@@ -10,7 +10,7 @@ run().catch(e => {
 async function run() {
     let sql = `
         select * from ${tableName}
-        order by salary_max,salary_min;
+        order by salary_max,salary_min,working_exp;
     `;
     let results = await db.query(sql);
     let zhilianData = {
