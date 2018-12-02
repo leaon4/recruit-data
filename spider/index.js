@@ -32,7 +32,7 @@ async function run() {
     }
     // 成功后start自增100
     start += 100;
-    // 控制台输入成功信息
+    // 控制台输出成功信息
     console.log(dbResult);
     // 输出start值，用于记录。如果出错则可根据此修改初始start值
     console.log(start);
